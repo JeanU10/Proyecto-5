@@ -15,7 +15,7 @@ sealed class BottomNavItem(
     val label: String
 ) {
     object Home : BottomNavItem(Screen.Home.route, Icons.Default.Home, "Home")
-    object Communities : BottomNavItem(Screen.Communities.route, Icons.Default.Apps, "Comunidades")
+    object Communities : BottomNavItem(Screen.Communities.route, Icons.Default.Apps, "Comunidad")
     object Create : BottomNavItem(Screen.CreatePost.route, Icons.Default.AddCircle, "Crear")
     object Metrics : BottomNavItem(Screen.MetricsList.route, Icons.Default.BarChart, "Métricas")
     object Profile : BottomNavItem(Screen.Profile.route, Icons.Default.Person, "Perfil")
