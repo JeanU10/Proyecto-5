@@ -22,9 +22,6 @@ import com.example.evaluacion2.navigation.Screen
 @Composable
 fun LoginScreen(navController: NavController) {
     val context = LocalContext.current
-    val authController = remember { AuthController() }
-    val userController = remember { UserController() }
-
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
 
@@ -72,7 +69,7 @@ fun LoginScreen(navController: NavController) {
                 if (correo.isBlank() || contrasena.isBlank()) {
                     Toast.makeText(context, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show()
                 } else {
-                    val exito = authController.login(correo, contrasena, userController.obtenerUsuarios())
+                    val exito = AuthController.login(correo, contrasena, UserController.obtenerUsuarios())
                     if (exito) {
                         Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
                         navController.navigate(Screen.Home.route) {
@@ -106,7 +103,7 @@ fun LoginScreen(navController: NavController) {
 
         TextButton(
             onClick = {
-                authController.loginAsGuest()
+                AuthController.loginAsGuest()
                 Toast.makeText(context, "Entrando como invitado", Toast.LENGTH_SHORT).show()
                 navController.navigate(Screen.Home.route) {
                     popUpTo(Screen.Login.route) { inclusive = true }

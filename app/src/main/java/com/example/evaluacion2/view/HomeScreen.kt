@@ -22,16 +22,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.evaluacion2.R
-import com.example.evaluacion2.controller.PostController
+import com.example.evaluacion2.controller.AuthController
+import com.example.evaluacion2.controller.PostRepository
 import com.example.evaluacion2.model.Post
 import com.example.evaluacion2.model.TipoPost
+import com.example.evaluacion2.navigation.Screen
 import com.example.evaluacion2.view.components.BottomNavBar
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-    val postController = remember { PostController() }
-    val posts = remember { postController.obtenerPosts() }
+    var posts by remember { mutableStateOf(PostRepository.obtenerPosts()) }
+
+    LaunchedEffect(Unit) {
+        posts = PostRepository.obtenerPosts()
+    }
 
     Scaffold(
         topBar = {
@@ -61,7 +67,13 @@ fun HomeScreen(navController: NavController) {
             }
 
             item {
-                CreatePostCard()
+                CreatePostCard(
+                    navController = navController,
+                    onPostCreated = { newPost ->
+                        PostRepository.crearPost(newPost)
+                        posts = PostRepository.obtenerPosts()
+                    }
+                )
             }
 
             item {
@@ -80,8 +92,9 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun CreatePostCard() {
+fun CreatePostCard(navController: NavController, onPostCreated: (Post) -> Unit) {
     var postText by remember { mutableStateOf("") }
+    var showGuestDialog by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -104,6 +117,7 @@ fun CreatePostCard() {
                         .background(Color.LightGray)
                         .padding(8.dp)
                 )
+
                 Spacer(modifier = Modifier.width(12.dp))
                 Text("Cooperativa Barrio Sur", fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.weight(1f))
@@ -111,36 +125,49 @@ fun CreatePostCard() {
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-
             OutlinedTextField(
                 value = postText,
                 onValueChange = { postText = it },
                 placeholder = { Text("Comparte algo con tu comunidad...") },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                enabled = !AuthController.isGuest()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
-
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { },
+                    onClick = {
+                        if (AuthController.isGuest()) {
+                            showGuestDialog = true
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Text("Imagen", color = Color.Black)
                 }
+
                 Button(
-                    onClick = { },
+                    onClick = {
+                        if (AuthController.isGuest()) {
+                            showGuestDialog = true
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                     shape = RoundedCornerShape(20.dp)
                 ) {
                     Text("Encuesta", color = Color.Black)
                 }
+
                 Button(
-                    onClick = { },
+                    onClick = {
+                        if (AuthController.isGuest()) {
+                            showGuestDialog = true
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                     shape = RoundedCornerShape(20.dp)
                 ) {
@@ -149,27 +176,87 @@ fun CreatePostCard() {
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 OutlinedButton(
-                    onClick = { },
+                    onClick = {
+                        postText = ""
+                    },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text("Borrador")
                 }
+
                 Button(
-                    onClick = { },
+                    onClick = {
+                        if (AuthController.isGuest()) {
+                            showGuestDialog = true
+                        } else if (postText.isNotBlank()) {
+                            val nuevoPost = Post(
+                                id = UUID.randomUUID().toString(),
+                                autor = "Usuario",
+                                autorImagen = "",
+                                tiempo = "Ahora",
+                                tipo = TipoPost.PUBLICACION,
+                                contenido = postText,
+                                imagenesUrl = emptyList(),
+                                opcionesEncuesta = emptyList(),
+                                comunidad = "Cooperativa Barrio Sur",
+                                comentariosCount = 0
+                            )
+
+                            onPostCreated(nuevoPost)
+                            postText = ""
+                        }
+                    },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    enabled = postText.isNotBlank() || AuthController.isGuest()
                 ) {
                     Text("Publicar")
                 }
             }
         }
+    }
+
+    // Diálogo para usuarios invitados
+    if (showGuestDialog) {
+        AlertDialog(
+            onDismissRequest = { showGuestDialog = false },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp)
+                )
+            },
+            title = {
+                Text("Registro requerido")
+            },
+            text = {
+                Text("Para publicar contenido necesitas crear una cuenta. ¿Deseas registrarte ahora?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showGuestDialog = false
+                        navController.navigate(Screen.Register.route)
+                    }
+                ) {
+                    Text("Registrarse")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showGuestDialog = false }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 
@@ -195,11 +282,13 @@ fun PostCard(post: Post) {
                         .background(Color.LightGray)
                         .padding(8.dp)
                 )
+
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(post.autor, fontWeight = FontWeight.Bold)
                     Text("${post.tiempo} • ${post.tipo.name}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
                 }
+
                 Spacer(modifier = Modifier.weight(1f))
                 if (post.tipo == TipoPost.ENCUESTA) {
                     Text("${post.opcionesEncuesta.sumOf { it.porcentaje }}%",
@@ -215,7 +304,6 @@ fun PostCard(post: Post) {
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-
             Text(post.contenido)
 
             if (post.tipo == TipoPost.PUBLICACION && post.imagenesUrl.isNotEmpty()) {

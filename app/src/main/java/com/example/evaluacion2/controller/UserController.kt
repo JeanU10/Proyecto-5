@@ -2,8 +2,7 @@ package com.example.evaluacion2.controller
 
 import com.example.evaluacion2.model.User
 
-class UserController {
-
+object UserController {
     private val usuarios = mutableListOf<User>()
 
     fun registrarUsuario(user: User): Boolean {

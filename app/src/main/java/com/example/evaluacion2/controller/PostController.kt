@@ -5,7 +5,6 @@ import com.example.evaluacion2.model.TipoPost
 import com.example.evaluacion2.model.OpcionEncuesta
 
 class PostController {
-
     private val posts = mutableListOf<Post>()
 
     init {
@@ -42,10 +41,10 @@ class PostController {
         ))
     }
 
-    fun obtenerPosts(): List<Post> = posts.sortedByDescending { it.tiempo }
+    fun obtenerPosts(): List<Post> = posts.toList()
 
     fun crearPost(post: Post): Boolean {
-        posts.add(post)
+        posts.add(0, post) // Agregar al inicio de la lista
         return true
     }
 

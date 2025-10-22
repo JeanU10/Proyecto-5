@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.evaluacion2.R
+import com.example.evaluacion2.controller.AuthController
 import com.example.evaluacion2.controller.UserController
 import com.example.evaluacion2.model.User
 import com.example.evaluacion2.navigation.Screen
@@ -27,8 +28,6 @@ import com.example.evaluacion2.navigation.Screen
 @Composable
 fun UserScreen(navController: NavController) {
     val context = LocalContext.current
-    val controller = remember { UserController() }
-
     var nombre by remember { mutableStateOf("") }
     var apellido by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
@@ -59,6 +58,7 @@ fun UserScreen(navController: NavController) {
                 label = { Text("Nombre") },
                 modifier = Modifier.weight(1f)
             )
+
             OutlinedTextField(
                 value = apellido,
                 onValueChange = { apellido = it },
@@ -76,12 +76,16 @@ fun UserScreen(navController: NavController) {
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(modifier = Modifier.height(12.dp))
+
         OutlinedTextField(
             value = usuario,
             onValueChange = { usuario = it },
             label = { Text("Usuario") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = contrasena,
@@ -90,6 +94,8 @@ fun UserScreen(navController: NavController) {
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
             value = confirmar,
@@ -137,20 +143,44 @@ fun UserScreen(navController: NavController) {
 
         Button(
             onClick = {
-                if (!aceptarTerminos) {
-                    Toast.makeText(context, "Debes aceptar los términos", Toast.LENGTH_SHORT).show()
-                } else if (contrasena != confirmar) {
-                    Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
-                } else {
-                    val nuevoUsuario = User(nombre, apellido, correo, usuario, contrasena, recibirNovedades)
-                    val exito = controller.registrarUsuario(nuevoUsuario)
-                    if (exito) {
-                        Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                        navController.navigate(Screen.Home.route) {
-                            popUpTo(Screen.Register.route) { inclusive = true }
+                when {
+                    !aceptarTerminos -> {
+                        Toast.makeText(context, "Debes aceptar los términos", Toast.LENGTH_SHORT).show()
+                    }
+                    nombre.isBlank() || apellido.isBlank() || correo.isBlank() ||
+                            usuario.isBlank() || contrasena.isBlank() -> {
+                        Toast.makeText(context, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show()
+                    }
+                    contrasena != confirmar -> {
+                        Toast.makeText(context, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                    }
+                    contrasena.length < 6 -> {
+                        Toast.makeText(context, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                    }
+                    !android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches() -> {
+                        Toast.makeText(context, "Ingresa un correo válido", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        val nuevoUsuario = User(
+                            nombre = nombre,
+                            apellido = apellido,
+                            correo = correo,
+                            usuario = usuario,
+                            contrasena = contrasena,
+                            recibirNovedades = recibirNovedades
+                        )
+
+                        val exito = UserController.registrarUsuario(nuevoUsuario)
+
+                        if (exito) {
+                            AuthController.register(nuevoUsuario)
+                            Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
+                            }
+                        } else {
+                            Toast.makeText(context, "Usuario o correo ya existente", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        Toast.makeText(context, "Usuario o correo ya existente", Toast.LENGTH_SHORT).show()
                     }
                 }
             },
@@ -158,14 +188,20 @@ fun UserScreen(navController: NavController) {
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
         ) {
-            Text("Registrarse")
+            Text("Registrarse", modifier = Modifier.padding(vertical = 8.dp))
         }
 
-        TextButton(onClick = {
-            navController.navigate(Screen.Home.route) {
-                popUpTo(Screen.Login.route) { inclusive = true }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextButton(
+            onClick = {
+                AuthController.loginAsGuest()
+                Toast.makeText(context, "Entrando como invitado", Toast.LENGTH_SHORT).show()
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Login.route) { inclusive = true }
+                }
             }
-        }) {
+        ) {
             Text("Continuar como Invitado")
         }
     }

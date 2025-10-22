@@ -28,25 +28,32 @@ fun SetupNavGraph(navController: NavHostController) {
         composable(route = Screen.Login.route) {
             LoginScreen(navController = navController)
         }
+
         composable(route = Screen.Register.route) {
-            UserScreen(navController = navController)
+            RegisterScreen(navController = navController)
         }
+
         composable(route = Screen.Home.route) {
             HomeScreen(navController = navController)
         }
+
         composable(route = Screen.Communities.route) {
             CommunitiesScreen(navController = navController)
         }
+
         composable(route = Screen.CreatePost.route) {
             CreatePostScreen(navController = navController)
         }
+
         composable(route = Screen.MetricsList.route) {
             MetricsListScreen(navController = navController)
         }
+
         composable(route = Screen.CommunityMetrics.route) { backStackEntry ->
             val communityName = backStackEntry.arguments?.getString("communityName") ?: ""
             CommunityMetricsScreen(navController = navController, communityName = communityName)
         }
+
         composable(route = Screen.Profile.route) {
             ProfileScreen(navController = navController)
         }

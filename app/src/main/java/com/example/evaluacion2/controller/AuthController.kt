@@ -2,8 +2,7 @@ package com.example.evaluacion2.controller
 
 import com.example.evaluacion2.model.User
 
-class AuthController {
-
+object AuthController {
     private var currentUser: User? = null
     private var isGuestMode: Boolean = false
 
@@ -16,6 +15,12 @@ class AuthController {
         } else {
             false
         }
+    }
+
+    fun register(user: User): Boolean {
+        currentUser = user
+        isGuestMode = false
+        return true
     }
 
     fun loginAsGuest() {
