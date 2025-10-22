@@ -63,7 +63,7 @@ fun ProfileScreen(navController: NavController) {
                 ComunidadUsuario("Barrio Sur", "")
             ),
             actividadReciente = if (isGuest) emptyList() else listOf(
-                ActividadReciente("Comentario en \"Huertas Urbanas\"", "hace 2h"),
+                ActividadReciente("Comentario en \"Huertas Urbanas\"", "hace 3h"),
                 ActividadReciente("Votó en encuesta \"Reciclaje 2025\"", "ayer"),
                 ActividadReciente("Publicó en \"Barrio Sur\"", "hace 3d")
             )
