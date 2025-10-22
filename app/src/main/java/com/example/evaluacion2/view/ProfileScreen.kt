@@ -1,5 +1,6 @@
 package com.example.evaluacion2.view
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,9 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.evaluacion2.controller.AuthController
 import com.example.evaluacion2.model.*
 import com.example.evaluacion2.navigation.Screen
@@ -103,15 +106,27 @@ fun ProfileScreen(navController: NavController) {
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Profile Picture",
-                            modifier = Modifier
-                                .size(80.dp)
-                                .clip(CircleShape)
-                                .background(Color.LightGray)
-                                .padding(16.dp)
-                        )
+                        if (currentUser?.imagenUrl?.isNotEmpty() == true) {
+                            Image(
+                                painter = rememberAsyncImagePainter(currentUser.imagenUrl),
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile Picture",
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.LightGray)
+                                    .padding(16.dp)
+                            )
+                        }
+
 
                         Spacer(modifier = Modifier.height(16.dp))
 
@@ -220,7 +235,9 @@ fun ProfileScreen(navController: NavController) {
                                 }
                             } else {
                                 OutlinedButton(
-                                    onClick = { },
+                                    onClick = {
+                                        navController.navigate(Screen.EditProfile.route)
+                                    },
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {

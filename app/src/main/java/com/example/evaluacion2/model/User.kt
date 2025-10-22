@@ -6,5 +6,6 @@ data class User(
     val correo: String,
     val usuario: String,
     val contrasena: String,
-    val recibirNovedades: Boolean
+    val recibirNovedades: Boolean,
+    val imagenUrl: String = ""
 )

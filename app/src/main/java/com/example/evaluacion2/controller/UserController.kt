@@ -13,5 +13,12 @@ object UserController {
         return true
     }
 
+    fun actualizarUsuario(updatedUser: User) {
+        val index = usuarios.indexOfFirst { it.correo == updatedUser.correo }
+        if (index != -1) {
+            usuarios[index] = updatedUser
+        }
+    }
+
     fun obtenerUsuarios(): List<User> = usuarios
 }

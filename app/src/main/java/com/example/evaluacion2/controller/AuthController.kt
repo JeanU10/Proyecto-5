@@ -23,6 +23,11 @@ object AuthController {
         return true
     }
 
+    fun updateUser(updatedUser: User) {
+        currentUser = updatedUser
+        UserController.actualizarUsuario(updatedUser)
+    }
+
     fun loginAsGuest() {
         isGuestMode = true
         currentUser = null

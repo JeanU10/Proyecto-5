@@ -17,6 +17,7 @@ sealed class Screen(val route: String) {
         fun createRoute(communityName: String) = "community_metrics/$communityName"
     }
     object Profile : Screen("profile")
+    object EditProfile : Screen("edit_profile")
 }
 
 @Composable
@@ -56,6 +57,10 @@ fun SetupNavGraph(navController: NavHostController) {
 
         composable(route = Screen.Profile.route) {
             ProfileScreen(navController = navController)
+        }
+
+        composable(route = Screen.EditProfile.route) {
+            EditProfileScreen(navController = navController)
         }
     }
 }
