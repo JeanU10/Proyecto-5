@@ -1,44 +1,95 @@
 package com.example.evaluacion2.view
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.evaluacion2.controller.AuthController
 import com.example.evaluacion2.controller.PostRepository
 import com.example.evaluacion2.model.Post
 import com.example.evaluacion2.model.TipoPost
 import com.example.evaluacion2.navigation.Screen
 import com.example.evaluacion2.view.components.BottomNavBar
+import java.io.File
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePostScreen(navController: NavController) {
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
+    val currentUser = AuthController.getCurrentUser()
+    val nombreUsuario = if (AuthController.isGuest()) {
+        "Invitado"
+    } else {
+        "${currentUser?.nombre ?: ""} ${currentUser?.apellido ?: ""}".trim().ifEmpty { "Usuario" }
+    }
+
     var titulo by remember { mutableStateOf("") }
     var contenido by remember { mutableStateOf("") }
     var comentariosActivados by remember { mutableStateOf(true) }
     var visibilidadSoloMiembros by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
     var showGuestDialog by remember { mutableStateOf(false) }
+    var showImageOptionsDialog by remember { mutableStateOf(false) }
 
-    val scrollState = rememberScrollState()
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUriString by remember { mutableStateOf("") }
 
-    // Verificar si es invitado al intentar escribir
+    val tempPhotoUri = remember {
+        val photoFile = File(context.cacheDir, "temp_photo_${System.currentTimeMillis()}.jpg")
+        FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            photoFile
+        )
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            imageUri = tempPhotoUri
+            imageUriString = tempPhotoUri.toString()
+        }
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            imageUri = it
+            imageUriString = it.toString()
+        }
+    }
+
     LaunchedEffect(Unit) {
         if (AuthController.isGuest()) {
             showGuestDialog = true
@@ -82,15 +133,26 @@ fun CreatePostScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Profile",
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(Color.LightGray)
-                                .padding(8.dp)
-                        )
+                        if (currentUser?.imagenUrl?.isNotEmpty() == true) {
+                            Image(
+                                painter = rememberAsyncImagePainter(currentUser.imagenUrl),
+                                contentDescription = "Foto de perfil",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.LightGray)
+                                    .padding(8.dp)
+                            )
+                        }
 
                         Spacer(modifier = Modifier.width(12.dp))
 
@@ -99,7 +161,7 @@ fun CreatePostScreen(navController: NavController) {
                             shape = RoundedCornerShape(20.dp)
                         ) {
                             Text(
-                                "Cooperativa Barrio Sur",
+                                nombreUsuario,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                             )
                         }
@@ -155,6 +217,40 @@ fun CreatePostScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    if (imageUriString.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(imageUriString),
+                                contentDescription = "Imagen seleccionada",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+
+                            IconButton(
+                                onClick = {
+                                    imageUri = null
+                                    imageUriString = ""
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(8.dp)
+                                    .background(Color.Black.copy(alpha = 0.6f), CircleShape)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Eliminar imagen",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -164,14 +260,32 @@ fun CreatePostScreen(navController: NavController) {
                                 color = Color.Gray,
                                 shape = RoundedCornerShape(8.dp)
                             )
-                            .background(Color.White, RoundedCornerShape(8.dp)),
+                            .background(Color.White, RoundedCornerShape(8.dp))
+                            .clickable {
+                                if (AuthController.isGuest()) {
+                                    showGuestDialog = true
+                                } else {
+                                    showImageOptionsDialog = true
+                                }
+                            },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            "Añadir imagen o video",
-                            color = Color.Gray,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                if (imageUriString.isEmpty()) "Añadir imagen o video" else "Cambiar imagen",
+                                color = Color.Gray,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            if (imageUriString.isEmpty()) {
+                                Text(
+                                    "Toca para seleccionar",
+                                    color = Color.Gray,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -299,6 +413,8 @@ fun CreatePostScreen(navController: NavController) {
                     onClick = {
                         titulo = ""
                         contenido = ""
+                        imageUri = null
+                        imageUriString = ""
                     },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(8.dp)
@@ -317,14 +433,20 @@ fun CreatePostScreen(navController: NavController) {
                                 contenido
                             }
 
+                            val imagenesUrl = if (imageUriString.isNotEmpty()) {
+                                listOf(imageUriString)
+                            } else {
+                                emptyList()
+                            }
+
                             val nuevoPost = Post(
                                 id = UUID.randomUUID().toString(),
-                                autor = "Usuario",
-                                autorImagen = "",
+                                autor = nombreUsuario,
+                                autorImagen = currentUser?.imagenUrl ?: "",
                                 tiempo = "Ahora",
                                 tipo = TipoPost.PUBLICACION,
                                 contenido = contenidoFinal,
-                                imagenesUrl = emptyList(),
+                                imagenesUrl = imagenesUrl,
                                 opcionesEncuesta = emptyList(),
                                 comunidad = "Cooperativa Barrio Sur",
                                 comentariosCount = 0
@@ -345,7 +467,84 @@ fun CreatePostScreen(navController: NavController) {
         }
     }
 
-    // Diálogo de éxito
+    if (showImageOptionsDialog) {
+        AlertDialog(
+            onDismissRequest = { showImageOptionsDialog = false },
+            title = {
+                Text("Agregar imagen")
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                showImageOptionsDialog = false
+                                cameraLauncher.launch(tempPhotoUri)
+                            },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CameraAlt,
+                                contentDescription = "Cámara",
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text("Tomar foto", fontWeight = FontWeight.Bold)
+                                Text("Usar la cámara", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            }
+                        }
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                showImageOptionsDialog = false
+                                galleryLauncher.launch("image/*")
+                            },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PhotoLibrary,
+                                contentDescription = "Galería",
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text("Subir foto", fontWeight = FontWeight.Bold)
+                                Text("Desde galería", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showImageOptionsDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { },
@@ -361,6 +560,8 @@ fun CreatePostScreen(navController: NavController) {
                         showSuccessDialog = false
                         titulo = ""
                         contenido = ""
+                        imageUri = null
+                        imageUriString = ""
                         navController.navigate(Screen.Home.route) {
                             popUpTo(Screen.Home.route) { inclusive = true }
                         }
@@ -372,7 +573,6 @@ fun CreatePostScreen(navController: NavController) {
         )
     }
 
-    // Diálogo para usuarios invitados
     if (showGuestDialog) {
         AlertDialog(
             onDismissRequest = {

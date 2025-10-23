@@ -17,11 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.evaluacion2.R
+import coil.compose.rememberAsyncImagePainter
 import com.example.evaluacion2.controller.AuthController
 import com.example.evaluacion2.controller.PostRepository
 import com.example.evaluacion2.model.Post
@@ -95,6 +94,12 @@ fun HomeScreen(navController: NavController) {
 fun CreatePostCard(navController: NavController, onPostCreated: (Post) -> Unit) {
     var postText by remember { mutableStateOf("") }
     var showGuestDialog by remember { mutableStateOf(false) }
+    val currentUser = AuthController.getCurrentUser()
+    val nombreUsuario = if (AuthController.isGuest()) {
+        "Invitado"
+    } else {
+        "${currentUser?.nombre ?: ""} ${currentUser?.apellido ?: ""}".trim().ifEmpty { "Usuario" }
+    }
 
     Card(
         modifier = Modifier
@@ -108,18 +113,29 @@ fun CreatePostCard(navController: NavController, onPostCreated: (Post) -> Unit) 
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.LightGray)
-                        .padding(8.dp)
-                )
+                if (currentUser?.imagenUrl?.isNotEmpty() == true) {
+                    Image(
+                        painter = rememberAsyncImagePainter(currentUser.imagenUrl),
+                        contentDescription = "Foto de perfil",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Profile",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray)
+                            .padding(8.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(12.dp))
-                Text("Cooperativa Barrio Sur", fontWeight = FontWeight.Bold)
+                Text(nombreUsuario, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.weight(1f))
                 Text("Cambiar", color = Color.Gray)
             }
@@ -196,8 +212,8 @@ fun CreatePostCard(navController: NavController, onPostCreated: (Post) -> Unit) 
                         } else if (postText.isNotBlank()) {
                             val nuevoPost = Post(
                                 id = UUID.randomUUID().toString(),
-                                autor = "Usuario",
-                                autorImagen = "",
+                                autor = nombreUsuario,
+                                autorImagen = currentUser?.imagenUrl ?: "",
                                 tiempo = "Ahora",
                                 tipo = TipoPost.PUBLICACION,
                                 contenido = postText,
@@ -222,7 +238,6 @@ fun CreatePostCard(navController: NavController, onPostCreated: (Post) -> Unit) 
         }
     }
 
-    // Diálogo para usuarios invitados
     if (showGuestDialog) {
         AlertDialog(
             onDismissRequest = { showGuestDialog = false },
@@ -273,30 +288,47 @@ fun PostCard(post: Post) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.LightGray)
-                        .padding(8.dp)
-                )
+                if (post.autorImagen.isNotEmpty()) {
+                    Image(
+                        painter = rememberAsyncImagePainter(post.autorImagen),
+                        contentDescription = "Foto de perfil",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Profile",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(Color.LightGray)
+                            .padding(8.dp)
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(post.autor, fontWeight = FontWeight.Bold)
-                    Text("${post.tiempo} • ${post.tipo.name}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(
+                        "${post.tiempo} • ${post.tipo.name}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
                 if (post.tipo == TipoPost.ENCUESTA) {
-                    Text("${post.opcionesEncuesta.sumOf { it.porcentaje }}%",
+                    Text(
+                        "${post.opcionesEncuesta.sumOf { it.porcentaje }}%",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Gray
                     )
                 } else {
-                    Text("${post.comentariosCount}",
+                    Text(
+                        "${post.comentariosCount}",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Gray
                     )
@@ -312,11 +344,13 @@ fun PostCard(post: Post) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(post.imagenesUrl.take(4)) { imageUrl ->
-                        Box(
+                        Image(
+                            painter = rememberAsyncImagePainter(imageUrl),
+                            contentDescription = "Imagen del post",
                             modifier = Modifier
                                 .size(150.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color.LightGray)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }
