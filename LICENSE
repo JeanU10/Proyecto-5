@@ -1,0 +1,80 @@
+LICENCIA MIT
+
+Copyright (c) 2024 Proyecto 5 - Plataforma de Comunidades Educativas
+
+Se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia
+de este software y archivos de documentación asociados (el "Software"), para tratar
+el Software sin restricción, incluyendo sin limitación los derechos
+de usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender
+copias del Software, y para permitir a las personas a las que se proporcione el Software
+hacerlo, sujeto a las siguientes condiciones:
+
+El aviso de copyright anterior y este aviso de permiso se incluirán en todas las
+copias o partes sustanciales del Software.
+
+EL SOFTWARE SE PROPORCIONA "TAL COMO ESTÁ", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O
+IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A LAS GARANTÍAS DE COMERCIABILIDAD,
+IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS
+AUTORES O TITULARES DE LOS DERECHOS DE AUTOR SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN,
+DAÑOS U OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRA MANERA,
+QUE SURJA DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTROS TRATOS EN EL SOFTWARE.
+
+---
+
+INFORMACIÓN DEL PROYECTO
+========================
+
+Nombre del Proyecto: Proyecto 5 - Plataforma de Comunidades Educativas
+Versión: 1.0
+Fecha de Creación: 2024
+Tipo de Licencia: MIT License
+
+DESARROLLADORES
+===============
+
+• Vicente A. Elias Riveros
+  - Rol: Desarrollador Principal
+  - Especialización: Arquitectura, Backend, Lógica de Negocio
+
+• Jean P. Valenzuela Navarrete  
+  - Rol: Desarrollador Principal
+  - Especialización: Frontend, UI/UX, Integración
+
+TECNOLOGÍAS UTILIZADAS
+=====================
+
+• Lenguaje Principal: Kotlin
+• Framework UI: Jetpack Compose
+• Arquitectura: Modelo-Vista-Controlador (MVC)
+• Plataforma: Android (API 24+)
+• Sistema de Diseño: Material Design 3
+
+DESCRIPCIÓN DEL PROYECTO
+========================
+
+Proyecto 5 es una aplicación móvil Android innovadora que revoluciona el modelo 
+educativo tradicional mediante la creación de una plataforma de comunidades 
+colaborativas. La aplicación facilita el intercambio horizontal de conocimientos, 
+promoviendo un entorno educativo inclusivo, motivador y centrado en el usuario.
+
+CARACTERÍSTICAS PRINCIPALES
+===========================
+
+• Sistema de autenticación multi-modal
+• Feed de contenido dinámico con soporte multimedia
+• Gestión avanzada de comunidades categorizadas
+• Sistema de análisis y métricas en tiempo real
+• Perfiles de usuario integrales y personalizables
+
+CONTACTO
+========
+
+Para consultas sobre el proyecto, licencia o colaboración:
+• Email: Equipo5@Proyecto5.com
+• Soporte Técnico: Soporte5@Proyecto5.com
+• Producto: Producto5@Proyecto5.com
+
+---
+
+Esta licencia está basada en la Licencia MIT estándar y ha sido traducida al español
+para facilitar su comprensión y uso en el contexto del proyecto.

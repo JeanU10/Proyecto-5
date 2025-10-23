@@ -537,12 +537,12 @@ androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 - **Contributing Guide**: [Enlace a guía de contribución]
 
 ### Contacto del Equipo
-- **Desarrollo**: [email@ejemplo.com]
-- **Soporte Técnico**: [soporte@ejemplo.com]
-- **Producto**: [producto@ejemplo.com]
+- **Desarrollo**: [Equipo5@Proyecto5.com]
+- **Soporte Técnico**: [Poporte5@Proyecto5.com]
+- **Producto**: [Producto5@Producto5.com]
 
 ### Licencia
-Este proyecto está bajo la licencia [Tipo de Licencia]. Ver el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la licencia **MIT License**. Ver el archivo [`LICENSE`](LICENSE) para más detalles.
 
 ---
 
@@ -560,5 +560,5 @@ Este proyecto está bajo la licencia [Tipo de Licencia]. Ver el archivo `LICENSE
 
 ---
 
-*Última actualización: [Fecha actual]*
-*Versión del documento: 1.0*
+*Última actualización: [23-10-2025]*
+*Versión del documento: 1.0.1*
