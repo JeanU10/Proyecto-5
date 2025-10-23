@@ -62,8 +62,8 @@ Crear un ecosistema digital que reduzca el aislamiento educativo, fortalezca el 
 
 | Rol | Nombre | Contribución |
 |-----|--------|--------------|
-| **Desarrollador Principal** | Vicente A. Elias Riveros | Arquitectura, Backend, Lógica de Negocio |
-| **Desarrollador Principal** | Jean P. Valenzuela Navarrete | Frontend, UI/UX, Integración |
+| **Desarrollador Principal** | Vicente A. Elias Riveros | Arquitectura, ,UI/UX, Lógica de Negocio |
+| **Desarrollador Principal** | Jean P. Valenzuela Navarrete | Frontend, UI/UX,Backend, Integración |
 
 ---
 
