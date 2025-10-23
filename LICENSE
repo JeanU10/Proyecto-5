@@ -26,7 +26,7 @@ INFORMACIÓN DEL PROYECTO
 
 Nombre del Proyecto: Proyecto 5 - Plataforma de Comunidades Educativas
 Versión: 1.0
-Fecha de Creación: 2024
+Fecha de Creación: 2025
 Tipo de Licencia: MIT License
 
 DESARROLLADORES
@@ -34,11 +34,11 @@ DESARROLLADORES
 
 • Vicente A. Elias Riveros
   - Rol: Desarrollador Principal
-  - Especialización: Arquitectura, Backend, Lógica de Negocio
+  - Especialización: Arquitectura,UI/UX, Lógica de Negocio
 
 • Jean P. Valenzuela Navarrete  
   - Rol: Desarrollador Principal
-  - Especialización: Frontend, UI/UX, Integración
+  - Especialización: Frontend, UI/UX, Backend, Integración
 
 TECNOLOGÍAS UTILIZADAS
 =====================
@@ -76,5 +76,4 @@ Para consultas sobre el proyecto, licencia o colaboración:
 
 ---
 
-Esta licencia está basada en la Licencia MIT estándar y ha sido traducida al español
-para facilitar su comprensión y uso en el contexto del proyecto.
+Esta licencia está basada en la Licencia MIT estándar.
