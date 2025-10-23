@@ -532,9 +532,9 @@ androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 ## Soporte y Contacto
 
 ### Documentación Adicional
-- **API Documentation**: [Enlace a documentación de API]
-- **Design System**: [Enlace a guía de diseño]
-- **Contributing Guide**: [Enlace a guía de contribución]
+- **API Documentation**
+- **Design System**
+- **Contributing Guide**
 
 ### Contacto del Equipo
 - **Desarrollo**: [Equipo5@Proyecto5.com]
